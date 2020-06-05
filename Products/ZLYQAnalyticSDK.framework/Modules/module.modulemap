@@ -1,0 +1,6 @@
+framework module ZLYQAnalyticSDK {
+  umbrella header "ZLYQAnalyticSDK.h"
+
+  export *
+  module * { export * }
+}
