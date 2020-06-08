@@ -46,6 +46,16 @@ App用户登录时调用`loginWithUserID`传入`userID`,退出登录时调用`lo
 ```
 当`shouldDelay`值为`false`时,该事件实时上传,值为`true`时,等于普通上传
 
+###### 6. 登录、退出登录更新`userId`
+登录成功后，传入`userId`
+```
+- (void)loginWithUserID:(NSString *)userID;
+```
+退出登录，清空`userId`
+```
+- (void)logout;
+```
+
 ##### 其它
 提供了获取事件公共参数的方法, 用作服务端埋点时保证数据的完整性
 ```
