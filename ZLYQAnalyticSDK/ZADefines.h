@@ -26,8 +26,9 @@ typedef NS_ENUM(NSUInteger, ZACommonParamsType) {
 };
 
 #pragma mark - path
-static NSString * const identificationPath = @"/api/v1/identification/";    // 验证身份
-static NSString * const eventPushPath = @"/api/v1/track/";                 // 上传
-static NSString * const profilePath = @"/api/v1/user_profile/";                  // 用户画像
+static NSString * const identificationPath  = @"/api/v1/identification/";        // 验证身份
+static NSString * const eventPushPath       = @"/api/v1/track/";                 // 上传
+static NSString * const profilePath         = @"/api/v1/user_profile/";          // 用户画像
+static NSString * const debugPath           = @"/api/v1/debug/";                 // debug
 
 #endif /* ZADefines_h */

@@ -73,6 +73,11 @@ completionHandler:(void (^)(BOOL))completion {
         return;
     }
     
+    // 正在上传 返回
+    if (self.isUploading) {
+        return;
+    }
+    
     BOOL isDebug = (debugMode != ZADebugModeClosed);
     NSString *timeKey = [ZAEventTool timeStr];
     if (isDebug == NO) {
@@ -89,11 +94,6 @@ completionHandler:(void (^)(BOOL))completion {
         self.isUploading = YES;
     }
     
-    // 正在上传 返回
-    if (self.isUploading) {
-        return;
-    }
-    
     // 无网络 返回
     if ([self networkStatus] == AFNetworkReachabilityStatusNotReachable) {
         return;
@@ -107,9 +107,10 @@ completionHandler:(void (^)(BOOL))completion {
         @"properties"   : events
     };
     
-    [ZAEventTool POST:[ZAEventTool pushURL]
-           parameters:params
-              success:^(id  _Nonnull responseObject) {
+    [ZAEventTool request:[ZAEventTool pushURL]
+                  method:@"POST"
+              parameters:params
+                 success:^(id  _Nonnull responseObject) {
         
         BOOL isSuccess = NO;
         if ([responseObject[@"code"] integerValue] == 0) {
@@ -146,19 +147,21 @@ completionHandler:(void (^)(BOOL))completion {
         @"distinct_id"  : [ZADataAPI shareManager].distinctID,
         @"user_id"      : [ZADataAPI shareManager].userID,
         @"time"         : [ZAEventTool formatTime],
-        @"type"         : type
+        @"type"         : type,
+        @"udid"         : [ZAEventTool udid],
     };
     NSDictionary *params = @{
         @"project_id"   : @([ZADataAPI shareManager].projectID.integerValue),
         @"type"         : @"user_profile",
         @"debug_mode"   : [ZAEventCommonParams debugStringWithDebugModel:debugMode],
         @"common"       : commomDict,
-        @"property"     : userInfo
+        @"property"     : userInfo,
     };
     
-    [ZAEventTool POST:[ZAEventTool profileURL]
-           parameters:params
-              success:^(id  _Nonnull responseObject) {
+    [ZAEventTool request:[ZAEventTool profileURL]
+                  method:@"POST"
+              parameters:params
+                 success:^(id  _Nonnull responseObject) {
         if ([responseObject[@"code"] integerValue] == 0) {
             NSLog(@"setProfile success");
         } else {

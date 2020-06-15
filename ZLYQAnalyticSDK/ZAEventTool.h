@@ -54,10 +54,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isSameDay:(NSDate *)first second:(NSDate *)second;
 
 #pragma mark - 网络请求
-+ (NSURLSessionTask *)POST:(NSString *)urlString
-                parameters:(NSDictionary *)parameters
-                   success:(void(^)(id responseObject))success
-                   failure:(void(^)(NSError *error))failure;
++ (NSURLSessionTask *)request:(NSString *)urlString
+                       method:(NSString *)method
+                   parameters:(NSDictionary *)parameters
+                      success:(void(^)(id responseObject))success
+                      failure:(void(^)(NSError *error))failure;
 
 #pragma mark -
 + (void)showAlert:(NSString *)title;

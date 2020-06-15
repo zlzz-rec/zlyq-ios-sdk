@@ -36,6 +36,8 @@
 @property (nonatomic, copy, readwrite) NSString *userID;
 @property (nonatomic, copy, readwrite) NSString *server;
 @property (nonatomic, copy, readwrite) NSString *apiKey;
+@property (nonatomic, copy, readwrite) NSString *appKey;    // scheme
+@property (nonatomic, copy, readwrite) NSString *debugId;
 
 @end
 
@@ -71,6 +73,8 @@ static NSString * const distinctIDKey       = @"sk_event_distinct_id_key";      
         self.duration = defaultDuration;
         self.maxCount = defaultMaxCount;
         
+        self.debugMode = ZADebugModeClosed;
+        
         [self addNotifications];
         [self setupTimer];
         
@@ -100,11 +104,13 @@ static NSString * const distinctIDKey       = @"sk_event_distinct_id_key";      
 
 /// 配置入口
 /// @param projectID 项目ID
+/// @param appKey appKey
 /// @param apiKey apiKey
 /// @param server 服务器地址
 /// @param duration 触发数据上报时间间隔 单位秒， 默认15秒   <0实时上传, =0 用默认值, >0 自定义
 /// @param count 触发数据上报条数 默认100条，实时上传该字段不起作用
 - (void)configWithProjectID:(NSString *)projectID
+                     appKey:(NSString *)appKey
                      apiKey:(NSString *)apiKey
                      server:(NSString *)server
              uploadDuration:(NSTimeInterval)duration
@@ -112,6 +118,10 @@ static NSString * const distinctIDKey       = @"sk_event_distinct_id_key";      
     // projectID
     NSAssert(projectID.length != 0, @"projectID不能为空");
     self.projectID = projectID;
+    
+    // appKey
+    NSAssert(appKey.length != 0, @"appKey不能为空");
+    self.appKey = appKey;
     
     // apiKey
     NSAssert(apiKey.length != 0, @"apiKey不能为空");
@@ -357,7 +367,10 @@ static NSString * const distinctIDKey       = @"sk_event_distinct_id_key";      
         @"user_id"      : self.userID
     };
     
-    [ZAEventTool POST:[ZAEventTool identificationURL] parameters:params success:^(id  _Nonnull responseObject) {
+    [ZAEventTool request:[ZAEventTool identificationURL]
+                  method:@"POST"
+              parameters:params
+                 success:^(id  _Nonnull responseObject) {
         if ([responseObject[@"code"] integerValue] == 0) {
             NSDictionary *data = responseObject[@"data"];
             NSString *distinctID = [NSString stringWithFormat:@"%@", data[@"distinct_id"]];
@@ -429,6 +442,17 @@ static NSString * const distinctIDKey       = @"sk_event_distinct_id_key";      
     if (urlComponents == nil) {
         return NO;
     }
+    
+    if ([urlComponents.scheme isEqualToString:self.appKey]) {
+        for (NSURLQueryItem *item in urlComponents.queryItems) {
+            if ([item.name isEqualToString:@"debug_id"]) {
+                self.debugId = item.value;
+                break;
+            }
+        }
+        [self callDebugModeView];
+        return YES;
+    }
     return NO;
 }
 
@@ -459,6 +483,25 @@ static NSString * const distinctIDKey       = @"sk_event_distinct_id_key";      
     } else if ([chooseMode isEqualToString:ZADebugModeDebugAndNotImportString]) {
         self.debugMode = ZADebugModeDebugAndNotImport;
     }
+    
+    // 请求
+    NSDictionary *params = @{
+        @"udid" : [ZAEventTool udid]
+    };
+    [ZAEventTool request:[NSString stringWithFormat:@"%@%@%@/%@", self.server, debugPath, self.projectID, self.debugId]
+                  method:@"PUT"
+              parameters:params
+                 success:^(id  _Nonnull responseObject) {
+        if ([responseObject[@"code"] integerValue] == 0) {
+            NSLog(@"set_debug success");
+        } else {
+            NSLog(@"set_debug failed: \n %@ \n", responseObject[@"data"]);
+        }
+        self.debugId = @"";
+    } failure:^(NSError * _Nonnull error) {
+        NSLog(@"set_debug error: \n %@ \n", error);
+        self.debugId = @"";
+    }];
 }
 
 #pragma mark - 公共参数

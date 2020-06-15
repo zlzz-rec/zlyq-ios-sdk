@@ -309,13 +309,14 @@ static TipView *tipView = nil;
 }
 
 #pragma mark - 请求
-+ (NSURLSessionTask *)POST:(NSString *)urlString
-                parameters:(NSDictionary *)parameters
-                   success:(void(^)(id responseObject))success
-                   failure:(void(^)(NSError *error))failure {
++ (NSURLSessionTask *)request:(NSString *)urlString
+                       method:(NSString *)method
+                   parameters:(NSDictionary *)parameters
+                      success:(void(^)(id responseObject))success
+                      failure:(void(^)(NSError *error))failure {
     
     NSURLSession *session = [NSURLSession sharedSession];
-    NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:[self requestUrlString:urlString method:@"POST" body:parameters] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+    NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:[self requestUrlString:urlString method:method body:parameters] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             NSError *jsonSerializationError = nil;
@@ -348,6 +349,7 @@ static TipView *tipView = nil;
     
     urlString = [self addCommonParamsToUrl:urlString];
     NSString *zSign = [self getZsignWithUrl:urlString params:body];
+    
     
     urlString = [urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
