@@ -9,14 +9,15 @@ pod 'ZLYQAnalyticsSDK'
 导入头文件`#import <ZLYQAnalyticsSDK/ZADataAPI>`
 ```
 [[ZADataAPI share] configWithProjectID:projectID
+                                appKey:appKey
                                 apiKey:apiKey
                                 server:server
                         uploadDuration:duration
                             uploadCount:count
 ```
-`projectID`、`apiKey`、`server`在私有化部署后获取;
+`projectID`、`appKey`、`apiKey`、`server`在私有化部署后获取，其中`appKey`需要添加到工程的`scheme`中，调试`debugMode`时需要唤起APP使用;
 
-`duration`指定触发上传的间隔时间,如果`duration`等于0,使用默认的15秒,如果`duration`小于0,取消定时任务;
+`duration`指定触发上传的间隔时间, 如果`duration`等于0,使用默认的15秒, 如果`duration`小于0,取消定时任务;
 
 `count`指定触发上传的条数。
 
