@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'ZLYQAnalyticSDK'
-  s.version          = '0.1.3'
+  s.version          = '0.1.4'
   s.summary          = 'Upload events.'
   s.description      = <<-DESC
   'Upload all custom events and default events.'
@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '9.0'
   
-  s.default_subspec = 'Code'
+  s.default_subspec = 'Framework'
   
   s.subspec 'Framework' do |f|
     f.vendored_frameworks = ['Products/**/*.framework']

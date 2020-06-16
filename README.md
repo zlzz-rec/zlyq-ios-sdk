@@ -6,7 +6,7 @@ pod 'ZLYQAnalyticsSDK'
 ```
 
 ##### 2. 初始化
-导入头文件`#import <ZLYQAnalyticsSDK/ZADataAPI>`
+导入头文件`#import <ZLYQAnalyticSDK/ZADataAPI>`
 ```
 [[ZADataAPI share] configWithProjectID:projectID
                                 appKey:appKey

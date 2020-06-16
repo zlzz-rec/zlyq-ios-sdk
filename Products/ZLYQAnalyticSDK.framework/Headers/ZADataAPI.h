@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, readonly) NSString *distinctID;
 @property (nonatomic, copy, readonly) NSString *server;
 @property (nonatomic, copy, readonly) NSString *projectID;
+@property (nonatomic, copy, readonly) NSString *apiKey;
 
 #pragma mark - 初始化
 + (instancetype)shareManager;
@@ -23,11 +24,13 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - 配置相关
 /// 配置入口
 /// @param projectID 项目ID
+/// @param appKey appKey
 /// @param apiKey apiKey
 /// @param server 服务器地址
 /// @param duration 触发数据上报时间间隔 单位秒， 默认15秒   <0实时上传, =0 用默认值, >0 自定义
 /// @param count 触发数据上报条数 默认100条，实时上传该字段不起作用
 - (void)configWithProjectID:(NSString *)projectID
+                     appKey:(NSString *)appKey
                      apiKey:(NSString *)apiKey
                      server:(NSString *)server
              uploadDuration:(NSTimeInterval)duration
@@ -64,6 +67,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)addEvent:(NSString *)eventName
             info:(nullable NSDictionary *)info
      shouldDelay:(BOOL)shouldDelay;
+
+#pragma mark - scheme唤起
+- (BOOL)couldHanleSchemeURL:(NSURL *)url;
 
 #pragma mark - 公共参数
 - (NSDictionary *)commonParams;
