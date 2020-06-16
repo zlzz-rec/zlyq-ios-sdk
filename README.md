@@ -2,7 +2,7 @@
 
 ##### 1. `CocoaPods`集成
 ```
-pod 'ZLYQAnalyticsSDK'
+pod 'ZLYQAnalyticSDK'
 ```
 
 ##### 2. 初始化
