@@ -343,6 +343,12 @@ static NSString * const distinctIDKey       = @"sk_event_distinct_id_key";      
 #pragma mark - 请求相关
 /// 登录
 - (void)loginWithUserID:(NSString *)userID {
+    
+    // 保存当前账号的事件
+    [self.saver saveEventsToLocal];
+    [self uploadLocalEvents];
+    
+    
     self.userID = userID;
     [[NSUserDefaults standardUserDefaults] setValue:userID forKey:userIDKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
@@ -352,6 +358,11 @@ static NSString * const distinctIDKey       = @"sk_event_distinct_id_key";      
 
 /// 退出登录
 - (void)logout {
+    
+    // 保存当前账号的事件
+    [self.saver saveEventsToLocal];
+    [self uploadLocalEvents];
+    
     self.userID = @"";
     [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:userIDKey];
     
@@ -375,6 +386,8 @@ static NSString * const distinctIDKey       = @"sk_event_distinct_id_key";      
             NSDictionary *data = responseObject[@"data"];
             NSString *distinctID = [NSString stringWithFormat:@"%@", data[@"distinct_id"]];
             self.distinctID = distinctID;
+            self.saver.distinct_id = distinctID;
+            self.pusher.distinct_id = distinctID;
             [[NSUserDefaults standardUserDefaults] setValue:distinctID forKey:distinctIDKey];
             [[NSUserDefaults standardUserDefaults] synchronize];
         }

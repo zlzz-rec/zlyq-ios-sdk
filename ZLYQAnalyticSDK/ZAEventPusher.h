@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ZAEventPusher : NSObject
 
+@property (nonatomic, copy) NSString *distinct_id;
 @property (nonatomic, assign) ZACommonParamsType commonParamsType;
 
 - (void)pushEvent:(NSDictionary *)event

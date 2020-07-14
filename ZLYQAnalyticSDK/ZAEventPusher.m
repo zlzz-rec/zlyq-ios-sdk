@@ -21,9 +21,9 @@
 
 @property (nonatomic, strong) NSLock *lock;
 
-@end
+@property (nonatomic, copy) NSString *upload_error_key;
 
-static NSString *upload_error_key = @"sk_events_upload_error_key";
+@end
 
 @implementation ZAEventPusher
 
@@ -34,14 +34,25 @@ static NSString *upload_error_key = @"sk_events_upload_error_key";
         self.lock = [[NSLock alloc] init];
         self.isUploading = NO;
         self.uploadingEvents = [NSMutableDictionary dictionary];
-        NSDictionary *uploadErrorEvents = [[NSUserDefaults standardUserDefaults] valueForKey:upload_error_key];
-        if (uploadErrorEvents.count > 0) {
-            [self.uploadingEvents addEntriesFromDictionary:uploadErrorEvents];
-        }
+        self.upload_error_key = @"sk_events_upload_error_key";  // 默认
         
         [self addNotifications];
     }
     return self;
+}
+
+- (void)setDistinct_id:(NSString *)distinct_id {
+    if (self.isUploading == NO) {
+        [self saveData];
+    }
+    
+    _distinct_id = distinct_id;
+    self.upload_error_key = [NSString stringWithFormat:@"sk_events_upload_error_key_%@", self.distinct_id];
+    
+    NSDictionary *uploadErrorEvents = [[NSUserDefaults standardUserDefaults] valueForKey:self.upload_error_key];
+    if (uploadErrorEvents.count > 0) {
+        [self.uploadingEvents addEntriesFromDictionary:uploadErrorEvents];
+    }
 }
 
 #pragma mark - 通知
@@ -53,8 +64,22 @@ static NSString *upload_error_key = @"sk_events_upload_error_key";
 }
 
 - (void)willTermination {
-    [[NSUserDefaults standardUserDefaults] setValue:self.uploadingEvents forKey:upload_error_key];
+    [self saveData];
+}
+
+- (void)saveData {
+    [[NSUserDefaults standardUserDefaults] setValue:self.uploadingEvents forKey:self.upload_error_key];
     [[NSUserDefaults standardUserDefaults] synchronize];
+    [self.uploadingEvents removeAllObjects];
+}
+
+- (NSMutableDictionary *)readData {
+    NSDictionary *data = [[NSUserDefaults standardUserDefaults] valueForKey:self.upload_error_key];
+    if (data) {
+        return [NSMutableDictionary dictionaryWithDictionary:data];
+    } else {
+        return [NSMutableDictionary dictionary];
+    }
 }
 
 #pragma mark - 上传
@@ -84,6 +109,7 @@ completionHandler:(void (^)(BOOL))completion {
         [self.lock lock];
         NSMutableArray *allEvents = [NSMutableArray arrayWithArray:events];
         // 把上传异常的事件都归类到一个数组中 打包上传
+        self.uploadingEvents = [self readData];
         for (NSString *key in self.uploadingEvents.allKeys) {
             [allEvents addObjectsFromArray:self.uploadingEvents[key]];
         }
@@ -96,6 +122,7 @@ completionHandler:(void (^)(BOOL))completion {
     
     // 无网络 返回
     if ([self networkStatus] == AFNetworkReachabilityStatusNotReachable) {
+        self.isUploading = NO;
         return;
     }
     
@@ -121,9 +148,10 @@ completionHandler:(void (^)(BOOL))completion {
             completion(isSuccess);
         }
         if (isDebug == NO) {
-            if (isSuccess) {
-                [self.uploadingEvents removeObjectForKey:timeKey];
+            if (isSuccess == NO) {
+                [self saveData];
             }
+            [self.uploadingEvents removeObjectForKey:timeKey];
             self.isUploading = NO;
         } else {
             NSLog(@"\n debug upload %@ \n---", isSuccess ? @"success" : @"failed");

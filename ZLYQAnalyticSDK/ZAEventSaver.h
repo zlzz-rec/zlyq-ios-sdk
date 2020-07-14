@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ZAEventSaver : NSObject
 
+@property (nonatomic, copy) NSString *distinct_id;
+
 @property (nonatomic, strong) NSMutableArray *events;   // 保存事件
 
 - (void)addEvent:(NSDictionary *)event;

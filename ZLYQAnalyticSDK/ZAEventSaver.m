@@ -12,9 +12,10 @@
 @property (nonatomic, strong) NSLock *readLock;
 @property (nonatomic, strong) NSLock *writeLock;
 
+@property (nonatomic, copy) NSString *local_events_key;
+
 @end
 
-static NSString *const local_events_key = @"sk_local_events_key";
 @implementation ZAEventSaver
 
 - (instancetype)init
@@ -22,8 +23,17 @@ static NSString *const local_events_key = @"sk_local_events_key";
     self = [super init];
     if (self) {
         self.events = [NSMutableArray array];
+        self.local_events_key = @"sk_local_events_key"; // 默认
     }
     return self;
+}
+
+- (void)setDistinct_id:(NSString *)distinct_id {
+    // 更新之前 保存之前的数据
+    [self saveEventsToLocal];
+    
+    _distinct_id = distinct_id;
+    self.local_events_key = [NSString stringWithFormat:@"sk_local_events_key_%@", _distinct_id];
 }
 
 #pragma mark - actions
@@ -38,7 +48,7 @@ static NSString *const local_events_key = @"sk_local_events_key";
     
     [self.writeLock lock];
     [localEvents addObjectsFromArray:self.events];
-    [[NSUserDefaults standardUserDefaults] setValue:localEvents forKey:local_events_key];
+    [[NSUserDefaults standardUserDefaults] setValue:localEvents forKey:self.local_events_key];
     [self.events removeAllObjects];
     [self.writeLock unlock];
 }
@@ -46,7 +56,7 @@ static NSString *const local_events_key = @"sk_local_events_key";
 /// 读取本地保存的事件
 - (NSArray *)readAllLocalEvents {
     [self.readLock lock];
-    NSArray *localEvents = [[NSUserDefaults standardUserDefaults] arrayForKey:local_events_key];
+    NSArray *localEvents = [[NSUserDefaults standardUserDefaults] arrayForKey:self.local_events_key];
     [self.readLock unlock];
     
     if (localEvents.count == 0) {
@@ -57,7 +67,7 @@ static NSString *const local_events_key = @"sk_local_events_key";
 
 /// 清除本地事件
 - (void)clearLocalEvents {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:local_events_key];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:self.local_events_key];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
