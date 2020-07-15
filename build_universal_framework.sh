@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# 运行脚本前，让xcode选择device的地方是generic iOS Device，否则打包出来的缺少arm7
 cd `dirname $0`
 
 # Framework 名称, 从第一个参数获取，如果没有参数，取文件夹名称做为名称，如果Framework名称和项目中的Target名称不一样的话，需要指定FRAMEWORK_NAME

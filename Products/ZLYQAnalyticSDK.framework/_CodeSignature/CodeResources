@@ -14,7 +14,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		iSM7W1KigneOyHdXXs16rFPC7yA=
+		z68oTLjQqwdhjSnrKlrF3bM/03w=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -25,6 +25,10 @@
 	<dict>
 		<key>Headers/ZADataAPI.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			30tmAqULSP3gxeRhKphtxjTeA0g=
+			</data>
 			<key>hash2</key>
 			<data>
 			8GPTgTVmqmBmtxGWwsY3K6/1Inb0tMkUcG0zR1LPMyc=
@@ -32,6 +36,10 @@
 		</dict>
 		<key>Headers/ZLYQAnalyticSDK.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			u9mZDYThTNAVD2jTpRJvrSQMoZQ=
+			</data>
 			<key>hash2</key>
 			<data>
 			t3gwEqPYRCJn79GiudFIzUZcL5u/oQ6/fQmt9j9QV4c=
@@ -39,6 +47,10 @@
 		</dict>
 		<key>Modules/module.modulemap</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			PrvNjGi0vmHwzFSqJVxlg3ZeZ0A=
+			</data>
 			<key>hash2</key>
 			<data>
 			UjTL53IvIpZGDwd01JUSY87PusNvmXCvlJawYobGcIM=

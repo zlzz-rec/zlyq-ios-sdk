@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'ZLYQAnalyticSDK'
-  s.version          = '0.1.5'
+  s.version          = '0.1.6'
   s.summary          = 'Upload events.'
   s.description      = <<-DESC
   'Upload all custom events and default events.'
